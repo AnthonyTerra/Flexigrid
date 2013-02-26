@@ -526,8 +526,6 @@
 								td = null;
 							}
 						}
-						//apply template
-                                		g.applyTemplate(idx, td);
                                 		
 						$(tbody).append(tr);
 						tr = null;
