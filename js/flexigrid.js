@@ -494,15 +494,17 @@
                                     }
                                     td.innerHTML = p.__mw.datacol(p, $(this).attr('abbr'), iHTML); //use middleware datacol to format cols
 								}
-				   //apply template
-				    g.applyTemplate(idx, td);								
-								// If the content has a <BGCOLOR=nnnnnn> option, decode it.
+				  				// If the content has a <BGCOLOR=nnnnnn> option, decode it.
 								var offs = td.innerHTML.indexOf( '<BGCOLOR=' );
 								if( offs >0 ) {
                                     $(td).css('background', text.substr(offs+7,7) );
 								}
 
 								$(td).attr('abbr', $(this).attr('abbr'));
+								
+								 //apply template
+								g.applyTemplate(idx, td);								
+				
 								$(tr).append(td);
 								td = null;
 							}
@@ -516,6 +518,10 @@
 								} else {
 									td.innerHTML = row.cell[p.colModel[idx].name];
 								}
+								
+								//apply template
+                                				g.applyTemplate(idx, td);								
+								
 								$(tr).append(td);
 								td = null;
 							}
