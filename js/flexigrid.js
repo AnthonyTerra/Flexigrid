@@ -4,7 +4,24 @@
  * Copyright (c) 2008 Paulo P. Marinas (code.google.com/p/flexigrid/)
  * Dual licensed under the MIT or GPL Version 2 licenses.
  * http://jquery.org/license
+*
+ * aterra - 2013-02-23 - added template support
  *
+ * a template column can be added as follows:
+ *             {
+                    display: 'Headertext',
+                    template: '<a href="www.someurl/{1}">{0}</a>',
+                    name: 'CustomData',
+                    width: 200,
+                    sortable: true,
+                    align: 'left'
+                }
+                
+                the data for the column can be a pipe delimited array of any length
+                data example:
+               {                   
+                   CustomData: mydata.SomeName + "||" + mydata.SomeKey
+               }
  */
 (function ($) {
 	/*
@@ -397,6 +414,18 @@
 				this.hDiv.scrollLeft = this.bDiv.scrollLeft;
 				this.rePosDrag();
 			},
+			applyTemplate: function (idx, td) {
+	                // added for templated grids columns
+				if (typeof p.colModel[idx].template != 'undefined') {
+					var templateItem = p.colModel[idx].template + "";
+					var data = td.innerHTML;
+					var dataArray = data.split("||");
+					var itemData = templateItem.replace(/{(\d+)}/g, function (match, number) {
+						return typeof dataArray[number] != 'undefined' ? dataArray[number] : match;
+					});
+					td.innerHTML = itemData;
+				}
+			},			
 			addData: function (data) { //parse data
 				if (p.dataType == 'json') {
 					data = $.extend({rows: [], page: 0, total: 0}, data);
@@ -465,6 +494,8 @@
                                     }
                                     td.innerHTML = p.__mw.datacol(p, $(this).attr('abbr'), iHTML); //use middleware datacol to format cols
 								}
+				   //apply template
+				    g.applyTemplate(idx, td);								
 								// If the content has a <BGCOLOR=nnnnnn> option, decode it.
 								var offs = td.innerHTML.indexOf( '<BGCOLOR=' );
 								if( offs >0 ) {
@@ -489,6 +520,9 @@
 								td = null;
 							}
 						}
+						//apply template
+                                		g.applyTemplate(idx, td);
+                                		
 						$(tbody).append(tr);
 						tr = null;
 					});
@@ -521,6 +555,10 @@
 							}
                             td.innerHTML = p.__mw.datacol(p, $(this).attr('abbr'), text); //use middleware datacol to format cols
 							$(td).attr('abbr', $(this).attr('abbr'));
+							
+							//apply template
+                            				g.applyTemplate(idx, td);
+                            
 							$(tr).append(td);
 							td = null;
 						});
